@@ -1,0 +1,297 @@
+---
+title: "SAP - Projektni zadatak"
+subtitle: "Case study *Analiza preferencija mladih ljudi*: Deskriptivna statistika, vizualizacija podataka, statističko zaključivanje, linarna regresija i ANOVA"
+author: "Domagoj Marinello, Sven Skender, Ana Skukan, Matea Vasilj"
+date: "1/13/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Case study: *Analiza preferencija mladih ljudi*
+
+Interesi mladih ljudi (glazba, filmovi itd.), zdrave navike, odabir načina života i obrasci potrošnje vrlo su
+važni za različite industrije, kao i donositelje demografskih, poreznih ili mirovinskih politika svake zemlje.
+Upravo su te teme bile predmet istraživanja provedenog u Slovačkoj nad mladim osobama izmedu 15. i 30.
+godine života.
+
+Shodno tome, obradili smo slijedeća istraživačka pitanja koja će biti detaljizirana u nastavku ove bilježnice:
+
+1. Razlikuju li se izraženi strahovi ispitanih žena i muškaraca?
+2. Možemo li predvidjeti obrazac potrošnje ovisno o žanru glazbe kojeg ispitanik preferira?
+3. Možemo li temeljem danih varijabli predvidjeti dob ispitanika?
+4. 
+
+Podaci za analizu sadržani su u datoteci opis pitanja.csv koja se sastoji od informacija prikupljenih upitnikom 
+koji je prezentiran gore navedenoj skupini ljudi. Podatci se sastoje od osobnih informacija ispitanika koje, medu ostalim, 
+ukljucuju dob, visinu, tezinu i spol. Preferencije ispitanika prikupljene su kroz kategorije glazbenog i filmskog ukusa, hobija, strahova,
+(ne)zdravih navika, osobina licnosti i drugih. Skup podataka sastoji od vise pitanja koja pruzaju numericke podatke, primjerice ocjenu
+preferencije ispitanika na skali od 1 do 5 te od kategorijskih podataka, primjerice, spol.
+
+Prije pregleda odgovora, pogledajmo postavljena pitanja s pojašnjenjima koja se nalaze u datoteci odgovori.csv:
+
+```{r pregled vrsta pianja}
+odgovori = read.csv("./data/odgovori.csv")
+odgovori
+```
+Sada, kada smo saznali o kakvim se pitanjima radi, možemo pogledati kako su ona kodirana, kakve smo odgovore uspjeli prikupiti i koliko ih je uopće:
+
+
+```{r pregled dimezija podataka}
+pitanja = read.csv("./data/opis pitanja.csv")
+head(pitanja)
+
+# Dimenzije dataseta:
+dim(pitanja)  # broj redaka, broj stupaca (broj primjera, broj varijabli) 
+
+## Pomoću summary-ja računamo statistike i doznajemo tipove podataka:
+summary(pitanja)
+```
+
+
+Prije nego počnemo s uporabom deskriptivne statistike i manipulacijom podataka, neka nam misao vodilja budu predložena istraživačka pitanja:
+
+## Istraživačko pitanje 1: Razlikuju li se izrazeni strahovi ispitanih žena i muškaraca?
+
+Počinjemo odvajanjem skupa podataka na skup podataka gdje su ispitanici žene i drugog gdje su ispitanici muškarci.
+
+```{r podijela skupa podataka na žene i muškarce}
+zene = pitanja[pitanja$Gender == "female", ]
+muskarci = pitanja[pitanja$Gender == "male", ]
+```
+
+Pogledajmo sada o kojim se to strahovima radi, odnosno o kojim strahovima imamo prikupljene podatke.
+
+```{r identificiranje strahova}
+for(column_name in names(pitanja[64:73]))
+  print(column_name) 
+```
+Kako bismo vidjeli kako su ispitanici rangirali razinu straha (ocjena 1-5) moramo proći kroz svaki pojedini strah za naše dvije skupine, vizualizirati podatke i i mjere centralne tendencije za stjecanje boljeg uvida u podatke; 
+žene i muškarce.
+
+```{r  mjere centralne tendencije: strah od stakora}
+zene = zene[complete.cases(zene['Rats']),]
+muskarci = muskarci[complete.cases(muskarci['Rats']),]
+
+cat('Srednja vrijednost iskazanog straha od štakora kod žena iznosi ', mean(zene$Rats),'\n')
+cat('Srednja vrijednost iskazanog straha od štakora muškaraca iznosi ', mean(muskarci$Rats), '\n')
+
+cat('Podrezana srednja vrijednost iskazanog straha od štakora kod žena iznosi ', mean(zene$Rats, trim = 0.1),'\n')
+cat('Podrezana srednja vrijednost iskazanog straha od štakora muškaraca iznosi ', mean(muskarci$Rats, trim = 0.1), '\n')
+
+cat('Medijan iskazanog straha od štakora kod žena iznosi ', median(zene$Rats),'\n')
+cat('Medijan iskazanog straha od štakora muškaraca iznosi ', median(muskarci$Rats), '\n')
+
+cat('Standardna devijacija iskazanog straha od štakora kod žena iznosi ', sd(zene$Rats),'\n')
+cat('Standardna devijacija iskazanog straha od štakora muškaraca iznosi ', sd(muskarci$Rats), '\n')
+```
+
+Nakon sto smo vidjeli koliko iznose  mjere centralne tendencije, zanima nas kako su te vrijednosti raspoređene, imamo li vrijednosti koje odskaču i sl., a to najbolje možemo uvidjeti vizualizacijom podataka. Nadalje, histograma ćemo koristit kako bismo doznali oblik naše distribucije i gustoće podataka.
+
+```{r vizualizacija straha od štakora}
+# Pravokutni dijagrami dviju skupina za strah od stakora:
+boxplot(zene$Rats, muskarci$Rats, 
+        names = c('Zene','Muskarci'),
+        main='Pravokutni dijagram razine straha od stakora u zena i muskaraca')
+
+hist(zene$Rats, 
+     breaks=seq(min(zene$Rats)-1.5,max(zene$Rats)+1.5,1),
+     main='Histogram razine straha od stakora kod zena',
+     xlab='Razina straha')
+
+hist(muskarci$Rats, 
+     breaks=seq(min(muskarci$Rats)-1.5,max(muskarci$Rats)+1.5,1),
+     main='Histogram razine straha od stakora kod muskaraca',
+     xlab='Razina straha')
+```
+Vizualno možemo pretpostaviti da zaista postoji razlika među iskazanih strahom od štakora u žena i muškaraca, ali kako bismo to zaista i dokazali potrebno je provesti statistički test koji će testirati jednakost srednjih vrijednosti dviju populacija.
+
+Ovakvo ispitivanje možemo provesti t-testom.
+
+### Testiranje jednakosti srednjih vrijednosti dvije populacije
+Neka su $X_1^1, X_1^2, \ldots, X_1^{n_1}$ i $X_2^1, X_2^2, \ldots, X_2^{n_2}$ dva nezavisna slučajna uzorka koji dolaze iz normalnih distribucija s očekivanjima $\mu_1$ i $\mu_2$ te s nepoznatim, ali jednakim varijancama $\sigma$. Zajednička disperzija uzorka se računa kao težinska sredina disperzija $S_{X_1}$ i $S_{X_2}$:
+
+$$S_X^2 = \frac{1}{n_1 + n_2 - 2} [(n_1 - 1) S_{X_1}^2 + (n_2 - 1) S_{X_2}^2].$$
+
+Slučajna varijabla
+$$Z = \frac{\bar{X}_1 - \bar{X}_2 - (\mu_1 - \mu_2)}{\sigma \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$
+
+ima jediničnu normalnu distribuciju. Slučajna varijabla
+$$W^2 = \frac{(n_1 - 1) S_{X_1}^2 + (n_2 - 1) S_{X_2}^2}{\sigma^2}$$
+
+ima $\chi^2$ razdiobu s $n_1 + n_2 - 2$ stupnja slobode. Zato slučajna varijabla
+$$T = \frac{Z \sqrt{n_1 + n_2 - 2}}{W} = \frac{\bar{X}_1 - \bar{X}_2 - (\mu_1 - \mu_2)}{S_X \sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$$
+
+ima egzaktnu $t$ distribuciju s $n_1 + n_2 - 2$ stupnja slobode.
+
+Ukoliko imamo 2 nezavisno normalo distribuirana uzorka, ali ovoga puta sa  različitim varijancama, tada koristimo testnu statistiku
+
+$$T' = \frac{\bar{X}_1 - \bar{X}_2 - (\mu_1 - \mu_2)}{\sqrt{\frac{s_{X_1}^2}{n_1} + \frac{s_{X_2}^2}{n_2}}}$$
+
+koja ima aproksimativnu t-distribuciju sa stupnjevima slobode 
+$$v = \frac{(s_{X_1}^2/n_1+ s_{X_2}^2 / n_2)^2}{(s_{X_1}^2/n_1)^2 / (n_1 - 1) + (s_{X_2}^2/n_2)^2 / (n_2 - 1)}$$
+gdje je 
+$$s_{X_i}^2 = \frac{1}{n_i - 1} \sum_{j=1}^{n_i} (X_i^j - \bar{X_i})^2 $$
+za $i=1,2$.
+
+Hipoteze tada glase:
+
+$$ \begin{aligned}
+H_0&: \mu_1 = \mu_2 \\
+H_1&: \mu_1 \neq \mu_2
+\end{aligned} $$
+
+Kako bismo mogli provesti test, moramo najprije provjeriti pretpostavke normalnosti i nezavisnosti uzorka.
+Već iz histograma možemo vidjeti da bismo mogli imati problem s normalnošću naših podataka, 
+ali ono što nam ide u prilog da će naša statistika ipak biti robusna jest veličina skupa podataka.
+
+Obzirom da razmatramo dva uzoraka dvaju različitih spolova, možemo pretpostaviti njihovu nezavisnost.
+
+Sada, dakle, trebamo provjeriti normalnost podataka koju najčešće provjeravamo: histgoramom (kojeg smo prethodno već iscrtali), qq-plotom te
+KS-testom (kojim provjeravamo pripadnost podataka distribuciji).
+
+```{r provjera normalnosti iskazanog straha od štakora}
+qqnorm(zene$Rats, pch = 1, frame = FALSE,main='Strah od stakora kod zena')
+qqline(zene$Rats, col = "steelblue", lwd = 2)
+
+qqnorm(muskarci$Rats, pch = 1, frame = FALSE,main='Strah od stakora kod muskaraca')
+qqline(muskarci$Rats, col = "steelblue", lwd = 2)
+```
+
+Na temelju qq-plota možemo vidjeti da su naše sumnje u normalnost podataka zaista opravdane. Ali, kao što smo već prije spomenuli, statistika bi idalje mogla biti robusna obzirom na veličinu našeg skupa podataka. Provjerimo zadovoljavamo li ostale preduvjete za provođenje t-testa, uzevši u obzirom već izračunate varijance naših podataka. Testirajmo prvo jesu li naše varijance značajno različite.
+
+
+### Test o jednakosti varijanci
+
+Ako imamo dva nezavisna slučajna uzorka $X_1^1, X_1^2, \ldots X_1^{n_1}$ i $X_2^1, X_2^2, \ldots, X_2^{n_2}$ koji dolaze iz normalnih distribucija s varijancama $\sigma_1^2$ i $\sigma_2^2$, tada slučajna varijabla
+$$F = \frac{S_{X_1}^2 / \sigma_1^2}{S_{X_2}^2 / \sigma_2^2}$$
+
+ima Fisherovu distribuciju s $(n_1 - 1, n_2 - 1)$ stupnjeva slobode, pri čemu vrijedi:
+$$S_{X_1}^2 = \frac{1}{n_1 - 1} \sum_{i = 1}^{n_1} (X_1^i - \bar{X}_1)^2, \quad S_{X_2}^2 = \frac{1}{n_2 - 1} \sum_{i = 1}^{n_2} (X_2^i - \bar{X}_2)^2.$$
+Hipoteze testa jednakosti varijanci glase:
+$$ \begin{aligned}
+H_0&: \sigma_1^2 = \sigma_2^2 \\
+H_1&:  \sigma_1^2 \neq \sigma_2^2
+\end{aligned} $$
+
+U programskom paketu R test o jednakosti varijanci je implementiran u funkciji `var.test()`, koja prima uzorke iz dvije populacije čije varijance uspoređujemo.
+
+Dakle, ispitajmo jednakost varijanci naših danih uzoraka.
+
+```{r test na različitost varijanci iskazanog straha od štakora}
+var.test(zene$Rats, muskarci$Rats)
+```
+p-vrijednost od 4.314e-07 nam govori da nećemo odbaciti hipotezu $H_0$ da su varijance naša dva uzorka jednaka.
+
+Provedimo sada dvostrani t-test uz pretpostavku jednakosti varijanci.
+
+```{r t-test na različitost iskazanog straha od štakora}
+# Uvijek se držimo istog poretka
+t.test(zene$Rats, muskarci$Rats, alt = "two.sided", var.equal = TRUE)
+```
+
+Zbog jako male p-vrijednost možemo odbaciti $H_0$ hipotezu o jednakosti izrazenih strahov u korist $H_1$, odnosno možemo reći da se izraženi strahovi kod muškaraca i žena razlikuju.
+
+Pokušajmo sada nešto robusnije od t-testa kako bismo dokazali svoju pretpostavku, vidjeli smo da naši podaci ne odgovaraju normalnosti, što ćemo i dodatno potvrditi Shapiro testom. Provedimo dakle neparametarski test kako bismo ustanovili razlikuju se izraženi strahovi žena i muškaraca, dakle koristeći iste hipoteze. Koristit ćemo Mann-Whitney i Wilcox signed-rank test.
+
+```{r Shapiro test normalnosti i Mann-Whitney u-test na različitost iskazanog straha od štakora}
+
+shapiro.test(muskarci$Rats) #podaci nisu normalno distribirani - studentov t-test nije prikladan
+
+wilcox.test(muskarci$Rats, zene$Rats, paired = FALSE) 
+wilcox.test(zene$Rats, muskarci$Rats, paired = FALSE) 
+```
+Zaključno, nakon što smo Shapiro testom potvrdili da se podaci ne ravnaju po normalnoj distribuciji, uz 95% interval povjerenja, možemo odbaciti $H_0$ hipotezu o jednakosti izrazenih strahova u korist $H_1$, odnosno možemo reći da se izraženi strahovi kod muškaraca i žena razlikuju.
+
+Možemo primjetiti i da se različitim redoslijedom argumenata W vrijednost mijenja u Mann-Whitney u-testu. Uzevši u obzir uobičajne prakse, zadržavamo vrijednost manje statistile i bilježimo da je W = 86003 iako se p-vrijednosti pritom, naravno, ne mijenjaju.
+
+Provedimo još sada Wilcox signed-rank test s našim uparenim uzorcima. Potrebno će dakle biti uskladiti veličine uzoraka te ćemo se zadržati pri tome da veći uzorak smanjimo na veličinu manjeg uzorka, iako postoje sofisticiranije metode, ovdje ćemo se ipak zadovoljiti ovakvim pristupom.
+
+```{r Wilcox signed-rank test na različitost iskazanog straha od štakora}
+
+uzorak = pitanja[complete.cases(pitanja['Rats']),]
+zene = uzorak[uzorak$Gender == "female", ]
+muskarci = uzorak[uzorak$Gender == "male", ]
+
+dim(zene)
+dim(muskarci)
+
+zene2 = zene[1:409,] #broj muškaraca u skupu podataka
+
+wilcox.test(muskarci$Rats, zene2$Rats, paired = TRUE)
+wilcox.test(zene2$Rats, muskarci$Rats, paired = TRUE) 
+```
+Provođenjem Wilcox signed-rank test, uz 95% interval povjerenja, također, možemo odbaciti $H_0$ hipotezu o jednakosti izrazenih strahova u korist $H_1$, odnosno možemo reći da se izraženi strahovi kod muškaraca i žena razlikuju. Ovdje također bilježimo vrijednost manje statistike, tj, V = 13676.
+
+Istovjetne postupke, vizualizacije i testiranja proveli smo i na svim drugim strahovima te su rezultati više-manje istovjetni i možemo ustvrditi da se strahovi zaista razlikuju između žena i muškaraca, ali se zbog opsežnosti ove bilježnice nećemo upuštati u provođenje testova. Valja naglasiti da se i kod ostalih skupina podaci ne ravnaju po normalnoj distribuciji te je učinkovitije bilo provoditi neparametarske testove.
+
+
+
+## Istraživačko pitanje 2: Možemo li predvidjeti obrazac potrošnje ovisno o žanru glazbe kojeg ispitanik preferira?
+
+Počinjemo, ponovno, odvajanjem skupa podataka na skup podataka gdje su ispitanici žene i drugog gdje su ispitanici muškarci.
+
+```{r podijela skupa podataka na žene i muškarce}
+zene = pitanja[pitanja$Gender == "female", ]
+muskarci = pitanja[pitanja$Gender == "male", ]
+```
+
+Pogledajmo sada o koje sve žanrove glazbe imamo na raspolaganju i koje obrasce potršnje smo opažali.
+
+```{r identificiranje žanrova i obrazaca potrošnje}
+for(column_name in names(pitanja[4:18]))
+  print(column_name) 
+
+for(column_name in names(pitanja[137:140]))
+  print(column_name) 
+```
+
+Kako bismo dokučili postoji li veza između ulaznih varijabli, preferencija određene glazbe ili možda čak više njih i izlazne varijable, tj. obrasca potrošnje upotrijebit ćemo upravo linearnu regresiju. Upravo nam ona odgovara na pitanje koje ulazne varijable najviše utječu na izlaznu te, posljedično, možemo li predvidjeti izlaz za pojedine vrijednosti ulaznih varijabli.
+
+Linearan model ima slijedeće pretpostavke:
+
+- linearnost veze $X$ i $Y$
+- pogreške nezavisne, homogene i normalno distribuirane s $\epsilon \sim \mathcal{N}(0,\sigma^2)$
+
+Općenito, promatranje utjecaja pojedine nezavisne varijable na neku zavisnu, moguće he grafički dobiti dobar dojam o njihovom odnosu, ali kako su naši podaci ocijene od 1 do 5 za sve naše varijable, takav pristup ne bi imao previše smisla. Umjesto toga, iz svakog smo žanra glazbe izdvojili one sudionike koji su ga označili odličnom ocjenom te smo za takve pogledali kakve imaju obrasce potrošnje. Nećemo ovdje prolaziti kroz sve opcije jer ih ima 60, nego ćemo samo prokomentirati zaključke i pokazati neke ilustrativne primjere.
+
+
+```{r}
+ljubiteljiMetala = pitanja[pitanja$Punk == 5, ]
+hist(ljubiteljiMetala$Entertainment.spending)
+hist(ljubiteljiMetala$Spending.on.healthy.eating)
+hist(ljubiteljiMetala$Spending.on.looks)
+hist(ljubiteljiMetala$Spending.on.gadgets)
+```
+
+```{r}
+ljubiteljiPopa = pitanja[pitanja$Pop == 5, ]
+hist(ljubiteljiPopa$Entertainment.spending)
+hist(ljubiteljiPopa$Spending.on.healthy.eating)
+hist(ljubiteljiPopa$Spending.on.looks)
+hist(ljubiteljiPopa$Spending.on.gadgets)
+
+ljubiteljiMetala = pitanja[pitanja$Metal.or.Hardrock == 5, ]
+hist(ljubiteljiMetala$Entertainment.spending)
+hist(ljubiteljiMetala$Spending.on.healthy.eating)
+hist(ljubiteljiMetala$Spending.on.looks)
+hist(ljubiteljiMetala$Spending.on.gadgets)
+
+ljubiteljiPunka = pitanja[pitanja$Punk == 5, ]
+hist(ljubiteljiPunka$Entertainment.spending)
+hist(ljubiteljiPunka$Spending.on.healthy.eating)
+hist(ljubiteljiPunka$Spending.on.looks)
+hist(ljubiteljiPunka$Spending.on.gadgets)
+
+nrow(ljubiteljiMetala)
+nrow(ljubiteljiPopa)
+nrow(ljubiteljiPunka)
+
+fit.spending.on.healthy.eating = lm(Spending.on.healthy.eating~Punk+Metal.or.Hardrock+Punk,data=pitanja) 
+summary(fit.spending.on.healthy.eating)
+
+fit.spending.on.healthy.eating.Punk = lm(Spending.on.healthy.eating~Punk,data=pitanja) 
+summary(fit.spending.on.healthy.eating.Punk)
+```

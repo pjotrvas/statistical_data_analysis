@@ -2,7 +2,7 @@
 title: "SAP - Projektni zadatak"
 subtitle: "Case study *Analiza preferencija mladih ljudi*: Deskriptivna statistika, vizualizacija podataka, statističko zaključivanje i linarna regresija"
 author: "Domagoj Marinello, Sven Skender, Ana Skukan, Matea Vasilj"
-date: "1/13/2022"
+date: "1/14/2022"
 output: pdf_document
 ---
 
@@ -17,7 +17,7 @@ važni za različite industrije, kao i donositelje demografskih, poreznih ili mi
 Upravo su te teme bile predmet istraživanja provedenog u Slovačkoj nad mladim osobama izmedu 15. i 30.
 godine života.
 
-Shodno tome, obradili smo slijedeća istraživačka pitanja koja će biti detaljizirana u nastavku ove bilježnice:
+Shodno tome, obradili smo sljedeća istraživačka pitanja koja će biti detaljizirana u nastavku ove bilježnice:
 
 1. Razlikuju li se izraženi strahovi ispitanih žena i muškaraca?
 2. Možemo li predvidjeti obrazac potrošnje ovisno o žanru glazbe kojeg ispitanik preferira?
@@ -25,9 +25,9 @@ Shodno tome, obradili smo slijedeća istraživačka pitanja koja će biti detalj
 4. Kako su kategorije o ljudskom ponašanju povezane sa brojem prijatelja?
 
 Podaci za analizu sadržani su u datoteci opis pitanja.csv koja se sastoji od informacija prikupljenih upitnikom 
-koji je prezentiran gore navedenoj skupini ljudi. Podatci se sastoje od osobnih informacija ispitanika koje, medu ostalim, 
-ukljucuju dob, visinu, tezinu i spol. Preferencije ispitanika prikupljene su kroz kategorije glazbenog i filmskog ukusa, hobija, strahova,
-(ne)zdravih navika, osobina licnosti i drugih. Skup podataka sastoji od vise pitanja koja pruzaju numericke podatke, primjerice ocjenu
+koji je prezentiran gore navedenoj skupini ljudi. Podatci se sastoje od osobnih informacija ispitanika koje, među ostalim, 
+uključuju dob, visinu, težinu i spol. Preferencije ispitanika prikupljene su kroz kategorije glazbenog i filmskog ukusa, hobija, strahova,
+(ne)zdravih navika, osobina ličnosti i drugih. Skup podataka sastoji od više pitanja koja pružaju numeričke podatke, primjerice ocjenu
 preferencije ispitanika na skali od 1 do 5 te od kategorijskih podataka, primjerice, spol.
 
 Prije pregleda odgovora, pogledajmo postavljena pitanja s pojašnjenjima koja se nalaze u datoteci odgovori.csv:
@@ -53,7 +53,7 @@ summary(pitanja)
 
 Prije nego počnemo s uporabom deskriptivne statistike i manipulacijom podataka, neka nam misao vodilja budu predložena istraživačka pitanja:
 
-## Istraživačko pitanje 1: Razlikuju li se izrazeni strahovi ispitanih žena i muškaraca?
+## Istraživačko pitanje 1: Razlikuju li se izraženi strahovi ispitanih žena i muškaraca?
 
 Počinjemo odvajanjem skupa podataka na skup podataka gdje su ispitanici žene i drugog gdje su ispitanici muškarci.
 
@@ -68,7 +68,7 @@ Pogledajmo sada o kojim se to strahovima radi, odnosno o kojim strahovima imamo 
 for(column_name in names(pitanja[64:73]))
   print(column_name) 
 ```
-Kako bismo vidjeli kako su ispitanici rangirali razinu straha (ocjena 1-5) moramo proći kroz svaki pojedini strah za naše dvije skupine, vizualizirati podatke i i mjere centralne tendencije za stjecanje boljeg uvida u podatke; 
+Kako bismo vidjeli kako su ispitanici rangirali razinu straha (ocjena 1-5) moramo proći kroz svaki pojedini strah za naše dvije skupine, vizualizirati podatke i mjere centralne tendencije za stjecanje boljeg uvida u podatke; 
 žene i muškarce.
 
 ```{r  mjere centralne tendencije: strah od stakora}
@@ -88,7 +88,7 @@ cat('Standardna devijacija iskazanog straha od štakora kod žena iznosi ', sd(z
 cat('Standardna devijacija iskazanog straha od štakora muškaraca iznosi ', sd(muskarci$Rats), '\n')
 ```
 
-Nakon sto smo vidjeli koliko iznose  mjere centralne tendencije, zanima nas kako su te vrijednosti raspoređene, imamo li vrijednosti koje odskaču i sl., a to najbolje možemo uvidjeti vizualizacijom podataka. Nadalje, histograma ćemo koristit kako bismo doznali oblik naše distribucije i gustoće podataka.
+Nakon sto smo vidjeli koliko iznose  mjere centralne tendencije, zanima nas kako su te vrijednosti raspoređene, imamo li vrijednosti koje odskaču i sl., a to najbolje možemo uvidjeti vizualizacijom podataka. Nadalje, histogram ćemo koristiti kako bismo doznali oblik naše distribucije i gustoće podataka.
 
 ```{r vizualizacija straha od štakora}
 # Pravokutni dijagrami dviju skupina za strah od stakora:
@@ -126,7 +126,7 @@ $$T = \frac{Z \sqrt{n_1 + n_2 - 2}}{W} = \frac{\bar{X}_1 - \bar{X}_2 - (\mu_1 - 
 
 ima egzaktnu $t$ distribuciju s $n_1 + n_2 - 2$ stupnja slobode.
 
-Ukoliko imamo 2 nezavisno normalo distribuirana uzorka, ali ovoga puta sa  različitim varijancama, tada koristimo testnu statistiku
+Ukoliko imamo 2 nezavisno normalno distribuirana uzorka, ali ovoga puta sa različitim varijancama, tada koristimo testnu statistiku
 
 $$T' = \frac{\bar{X}_1 - \bar{X}_2 - (\mu_1 - \mu_2)}{\sqrt{\frac{s_{X_1}^2}{n_1} + \frac{s_{X_2}^2}{n_2}}}$$
 
@@ -160,7 +160,7 @@ qqnorm(muskarci$Rats, pch = 1, frame = FALSE,main='Strah od stakora kod muskarac
 qqline(muskarci$Rats, col = "steelblue", lwd = 2)
 ```
 
-Na temelju qq-plota možemo vidjeti da su naše sumnje u normalnost podataka zaista opravdane. Ali, kao što smo već prije spomenuli, statistika bi idalje mogla biti robusna obzirom na veličinu našeg skupa podataka. Provjerimo zadovoljavamo li ostale preduvjete za provođenje t-testa, uzevši u obzirom već izračunate varijance naših podataka. Testirajmo prvo jesu li naše varijance značajno različite.
+Na temelju qq-plota možemo vidjeti da su naše sumnje u normalnost podataka zaista opravdane. Ali, kao što smo već prije spomenuli, statistika bi i dalje mogla biti robusna obzirom na veličinu našeg skupa podataka. Provjerimo zadovoljavamo li ostale preduvjete za provođenje t-testa, uzevši u obzirom već izračunate varijance naših podataka. Testirajmo prvo jesu li naše varijance značajno različite.
 
 
 ### Test o jednakosti varijanci
@@ -192,7 +192,7 @@ Provedimo sada dvostrani t-test uz pretpostavku jednakosti varijanci.
 t.test(zene$Rats, muskarci$Rats, alt = "two.sided", var.equal = TRUE)
 ```
 
-Zbog jako male p-vrijednost možemo odbaciti $H_0$ hipotezu o jednakosti izrazenih strahov u korist $H_1$, odnosno možemo reći da se izraženi strahovi kod muškaraca i žena razlikuju.
+Zbog jako male p-vrijednost možemo odbaciti $H_0$ hipotezu o jednakosti izraženih strahova u korist $H_1$, odnosno možemo reći da se izraženi strahovi kod muškaraca i žena razlikuju.
 
 Pokušajmo sada nešto robusnije od t-testa kako bismo dokazali svoju pretpostavku, vidjeli smo da naši podaci ne odgovaraju normalnosti, što ćemo i dodatno potvrditi Shapiro testom. Provedimo dakle neparametarski test kako bismo ustanovili razlikuju se izraženi strahovi žena i muškaraca, dakle koristeći iste hipoteze. Koristit ćemo Mann-Whitney i Wilcox signed-rank test.
 
@@ -203,9 +203,9 @@ shapiro.test(muskarci$Rats) #podaci nisu normalno distribirani - studentov t-tes
 wilcox.test(muskarci$Rats, zene$Rats, paired = FALSE) 
 wilcox.test(zene$Rats, muskarci$Rats, paired = FALSE) 
 ```
-Zaključno, nakon što smo Shapiro testom potvrdili da se podaci ne ravnaju po normalnoj distribuciji, uz 95% interval povjerenja, možemo odbaciti $H_0$ hipotezu o jednakosti izrazenih strahova u korist $H_1$, odnosno možemo reći da se izraženi strahovi kod muškaraca i žena razlikuju.
+Zaključno, nakon što smo Shapiro testom potvrdili da se podaci ne ravnaju po normalnoj distribuciji, uz 95% interval povjerenja, možemo odbaciti $H_0$ hipotezu o jednakosti izraženih strahova u korist $H_1$, odnosno možemo reći da se izraženi strahovi kod muškaraca i žena razlikuju.
 
-Možemo primjetiti i da se različitim redoslijedom argumenata W vrijednost mijenja u Mann-Whitney u-testu. Uzevši u obzir uobičajne prakse, zadržavamo vrijednost manje statistile i bilježimo da je W = 86003 iako se p-vrijednosti pritom, naravno, ne mijenjaju.
+Možemo primjetiti i da se različitim redoslijedom argumenata W vrijednost mijenja u Mann-Whitney u-testu. Uzevši u obzir uobičajene prakse, zadržavamo vrijednost manje statistike i bilježimo da je W = 86003 iako se p-vrijednosti pritom, naravno, ne mijenjaju.
 
 Provedimo još sada Wilcox signed-rank test s našim uparenim uzorcima. Potrebno će dakle biti uskladiti veličine uzoraka te ćemo se zadržati pri tome da veći uzorak smanjimo na veličinu manjeg uzorka, iako postoje sofisticiranije metode, ovdje ćemo se ipak zadovoljiti ovakvim pristupom.
 
@@ -223,9 +223,9 @@ zene2 = zene[1:409,] #broj muškaraca u skupu podataka
 wilcox.test(muskarci$Rats, zene2$Rats, paired = TRUE)
 wilcox.test(zene2$Rats, muskarci$Rats, paired = TRUE) 
 ```
-Provođenjem Wilcox signed-rank test, uz 95% interval povjerenja, također, možemo odbaciti $H_0$ hipotezu o jednakosti izrazenih strahova od štakora u korist $H_1$, odnosno možemo reći da se izraženi strahovi od štkaora kod muškaraca i žena razlikuju. Ovdje također bilježimo vrijednost manje statistike, tj, V = 13676.
+Provođenjem Wilcox signed-rank testa, uz 95% interval povjerenja, također, možemo odbaciti $H_0$ hipotezu o jednakosti izraženih strahova od štakora u korist $H_1$, odnosno možemo reći da se izraženi strahovi od štakora kod muškaraca i žena razlikuju. Ovdje također bilježimo vrijednost manje statistike, tj, V = 13676.
 
-Istovjetne postupke, vizualizacije i testiranja proveli smo i na svim drugim strahovima te su rezultati više-manje istovjetno možemo ustvrditi da se strahovi zaista razlikuju između žena i muškaraca, ali se zbog opsežnosti ove bilježnice nećemo upuštati u provođenje testova. Valja naglasiti da se i kod ostalih skupina podaci ne ravnaju po normalnoj distribuciji te je učinkovitije bilo provoditi neparametarske testove. Samo ćemo ukratko navedeno dokazati provođenjem neparamtarskih testova za svaki strah.
+Istovjetne postupke, vizualizacije i testiranja proveli smo i na svim drugim strahovima te su rezultati više-manje istovjetni i možemo ustvrditi da se strahovi zaista razlikuju između žena i muškaraca, ali se zbog opsežnosti ove bilježnice nećemo upuštati u provođenje testova. Valja naglasiti da se i kod ostalih skupina podaci ne ravnaju po normalnoj distribuciji te je učinkovitije bilo provoditi neparametarske testove. Samo ćemo ukratko navedeno dokazati provođenjem neparamtarskih testova za svaki strah.
 
 
 ```{r Shapiro test normalnosti i Mann-Whitney u-test i Wilcox signed-rank test na različitost iskazanog straha od letenja}
@@ -370,14 +370,14 @@ for(column_name in names(pitanja[137:140]))
   print(column_name) 
 ```
 
-Kako bismo dokučili postoji li veza između ulaznih varijabli, preferencija određene glazbe ili možda čak više njih i izlazne varijable, tj. obrasca potrošnje upotrijebit ćemo upravo linearnu regresiju. Upravo nam ona odgovara na pitanje koje ulazne varijable najviše utječu na izlaznu te, posljedično, možemo li predvidjeti izlaz za pojedine vrijednosti ulaznih varijabli.
+Kako bismo dokučili postoji li veza između ulaznih varijabli, preferencija određene glazbe ili možda čak više njih i izlazne varijable, tj. obrasca potrošnje upotrijebit ćemo linearnu regresiju. Upravo nam ona odgovara na pitanje koje ulazne varijable najviše utječu na izlaznu te, posljedično, možemo li predvidjeti izlaz za pojedine vrijednosti ulaznih varijabli.
 
 Linearan model ima slijedeće pretpostavke:
 
 - linearnost veze $X$ i $Y$
 - pogreške nezavisne, homogene i normalno distribuirane s $\epsilon \sim \mathcal{N}(0,\sigma^2)$
 
-Općenito, promatranje utjecaja pojedine nezavisne varijable na neku zavisnu, moguće he grafički dobiti dobar dojam o njihovom odnosu, ali kako su naši podaci ocijene od 1 do 5 za sve naše varijable, takav pristup ne bi imao previše smisla. Umjesto toga, iz svakog smo žanra glazbe izdvojili one sudionike koji su ga označili odličnom ocjenom te smo za takve pogledali kakve imaju obrasce potrošnje. Nećemo ovdje prolaziti kroz sve opcije jer ih ima 60, nego ćemo samo izdvojiti one koje smo smatrali da pokazuju upravo sklonost određenoj vrsti potrošnje i prokomentirati zaključke.
+Općenito, promatranje utjecaja pojedine nezavisne varijable na neku zavisnu, moguće je grafički dobiti dobar dojam o njihovom odnosu, ali kako su naši podaci ocjene od 1 do 5 za sve naše varijable, takav pristup ne bi imao previše smisla. Umjesto toga, iz svakog smo žanra glazbe izdvojili one sudionike koji su ga označili odličnom ocjenom te smo za takve pogledali kakve imaju obrasce potrošnje. Nećemo ovdje prolaziti kroz sve opcije jer ih ima 60, nego ćemo samo izdvojiti one koje smo smatrali da pokazuju upravo sklonost određenoj vrsti potrošnje i prokomentirati zaključke.
 
 ```{r}
 ljubiteljiPopa = pitanja[pitanja$Pop == 5, ]
@@ -436,7 +436,7 @@ fit.spending.on.healthy.eating = lm(Spending.on.healthy.eating ~ Pop + Metal.or.
 summary(fit.spending.on.healthy.eating)
 ```
 
-Rezultati nisu ni blizu onima koje smo očekivali, ${R^2}$ je izrazito malen, što ukazuje na to da nije moguće predvidjeti tko će potrošiti više na zdravi prehranu na temelju glazbe koje sluša. Ali, vrijednost F-testa uz stupnjeve slobode 9, 954 ipak upućuje da je model značajan jer prelazi vrijednost od 1.88. Prije nego pokušamo još neku kombinaciju provjerimo normalnost dobivenih reziduala i homogenost varijance.
+Rezultati nisu ni blizu onima koje smo očekivali, ${R^2}$ je izrazito malen, što ukazuje na to da nije moguće predvidjeti tko će potrošiti više na zdravu prehranu na temelju glazbe koje sluša. Ali, vrijednost F-testa uz stupnjeve slobode 9, 954 ipak upućuje da je model značajan jer prelazi vrijednost od 1.88. Prije nego pokušamo još neku kombinaciju provjerimo normalnost dobivenih reziduala i homogenost varijance.
 
 ### Normalnost reziduala i homogenost varijance
 Normalnost reziduala moguće je provjeriti grafički, pomoću kvantil-kvantil plota (usporedbom s linijom normalne razdiobe), te statistički pomoću Kolmogorov-Smirnovljevog testa.
@@ -462,7 +462,7 @@ ad.test(rstandard(fit.spending.on.healthy.eating))
 ```
 Grafički, iz histograma možemo zaključiti da se naša distribucija razlikuje od normalne, što dodatno potvrđuje q-q plot koji je dosta zakrivljen i ima "prekide".
 
-Prokomentirajmo sada KS test; ovdje imamo dva problema, Kolmogorov-Smirnovljev test je test za kontinuiranu distribuciju i stoga skup podataka ne bi trebao sadržavati nikakve veze, odnsono ponovljene vrijednosti, što je upravo slučaj u našem skupu podataka (ocijene 1 do 5). Umjesto toga potrebno je koristiti Lilliefors test, kao što smo i učinili, ali smo posegnuli i za jačom alternativom kada je u pitanju točnost na ovakvom skupu podataka, a to je Anderson-Darling test na normalnost koji nam je doduše dao istu p vrijednost, ali vrijednost statistike A svakako je veća. Izvedimo sada zaključak o normlanosti na temelju Anderson-Darlingovog testa;
+Prokomentirajmo sada KS test; ovdje imamo dva problema, Kolmogorov-Smirnovljev test je test za kontinuiranu distribuciju i stoga skup podataka ne bi trebao sadržavati nikakve veze, odnsono ponovljene vrijednosti, što je upravo slučaj u našem skupu podataka (ocjene 1 do 5). Umjesto toga potrebno je koristiti Lilliefors test, kao što smo i učinili, ali smo posegnuli i za jačom alternativom kada je u pitanju točnost na ovakvom skupu podataka, a to je Anderson-Darling test na normalnost koji nam je doduše dao istu p vrijednost, ali vrijednost statistike A svakako je veća. Izvedimo sada zaključak o normlanosti na temelju Anderson-Darlingovog testa;
 
 Test odbacuje hipotezu normalnosti jer je p-vrijednost manja od 2.2e-16, dok je dovoljan uvjet za odbacivanje normalnosti p-vrijednost manja ili jednaka 0,05. Zaključujemo dakle da naši reziduali nisu normalno distribuirani.
 
@@ -473,7 +473,7 @@ Zanimalo nas je, je li možda uzrok lošim rezultatima modela velika korelacija 
 ```{r korelacijski koeficijent}
 cor(cbind(potrosnjazdravahrana$Spending.on.healthy.eating, potrosnjazdravahrana$Pop, potrosnjazdravahrana$Metal.or.Hardrock, potrosnjazdravahrana$Punk, potrosnjazdravahrana$Hiphop..Rap, potrosnjazdravahrana$Reggae..Ska, potrosnjazdravahrana$Swing..Jazz, potrosnjazdravahrana$Rock.n.roll, potrosnjazdravahrana$Alternative, potrosnjazdravahrana$Techno..Trance)) 
 ```
-Rezultati pokuzauju kako korelacija među varijablama nije uzrok problema, odnsono nemogućnosti predviđanja pa naše rješenje neće biti nestabilno zbog korelacija jer nigdje nemamo visoki koeficijent korelacije. Zaključno, ne možemo kvalitetno donijeti zaključak ljubitelji kojih glazbenih žanrova će će kako trošiti na zdravu hranu.
+Rezultati pokazuju kako korelacija među varijablama nije uzrok problema, odnsono nemogućnosti predviđanja pa naše rješenje neće biti nestabilno zbog korelacija jer nigdje nemamo visoki koeficijent korelacije. Zaključno, ne možemo kvalitetno donijeti zaključak o tome kako će ljubitelji određenih glazbenih žanrova trošiti na zdravu hranu.
 
 Kako se ova bilježnica ne bi odveć oduljila, za druge ćemo kategorije samo provesti linearnu regresiju prema gore navedenom principu i komentirati vrijednosti koeficijenta korelacije i${R^2}$; ukoliko bude potrebno, na ispitivanju možemo predočiti dulju verziju bilježnice.
 
@@ -485,7 +485,7 @@ cor(cbind(potrosnjaizgled$Spending.on.looks, potrosnjaizgled$Pop, potrosnjaizgle
 fit.spending.on.looks = lm(Spending.on.looks ~ Pop + Hiphop..Rap + Reggae..Ska + Latino, data = potrosnjaizgled) 
 summary(fit.spending.on.healthy.eating)
 ```
-Pri predviđanju potrošenja na izgled dobili smo istu vrijednost ${R^2}$ kao i za potrošnju na zdravu hranu. a F-statistika nam opet ukazuje da je model značajan. Ovdje, također, ne opažamo velike korelacije pa možemo ustvrditi  da one ne smanjuju kvalitetu naše predikcije. Zaključno, ne možemo kvalitetno donijeti zaključak ljubitelji kojih glazbenih žanrova će kako trošiti na izgled.
+Pri predviđanju potrošnje na izgled dobili smo istu vrijednost ${R^2}$ kao i za potrošnju na zdravu hranu. a F-statistika nam opet ukazuje da je model značajan. Ovdje, također, ne opažamo velike korelacije pa možemo ustvrditi da one ne smanjuju kvalitetu naše predikcije. Zaključno, ne možemo kvalitetno donijeti zaključak ljubitelji kojih glazbenih žanrova će kako trošiti na izgled.
 
 ```{r linearna regresija: predvidanje potrošnje na zabavu}
 potrosnjazabava = pitanja[complete.cases(pitanja[, c('Entertainment.spending', 'Reggae..Ska', 'Hiphop..Rap')]),]
@@ -495,7 +495,7 @@ cor(cbind(potrosnjazabava$Entertainment.spending, potrosnjazabava$Reggae..Ska, p
 fit.entertainment.spending = lm(Entertainment.spending ~ Pop + Hiphop..Rap + Reggae..Ska,data=potrosnjazabava) 
 summary(fit.entertainment.spending)
 ```
-Ponovno smo došli do sličnih opservacija, pri predviđanju potrošenja na zabavu dobili smo istu vrijednost ${R^2}$ nešto veću od dosadašnjih, a F-statistika je ovaj puta također veća i veća od granične, koja iznosi 2.6 pa ukazuje da je model značajan. Ovdje, također, ne opažamo velike korelacije pa možemo ustvrditi da one ne smanjuju kvalitetu naše predikcije. Zaključno, ne možemo kvalitetno donijeti zaključak ljubitelji kojih glazbenih žanrova će kako trošiti na izgled.
+Ponovno smo došli do sličnih opservacija, pri predviđanju potrošnje na zabavu dobili smo istu vrijednost ${R^2}$ nešto veću od dosadašnjih, a F-statistika je ovaj puta također veća i veća od granične, koja iznosi 2.6 pa ukazuje da je model značajan. Ovdje, također, ne opažamo velike korelacije pa možemo ustvrditi da one ne smanjuju kvalitetu naše predikcije. Zaključno, ne možemo kvalitetno donijeti zaključak ljubitelji kojih glazbenih žanrova će kako trošiti na izgled.
 
 ```{r linearna regresija: predvidanje potrošnje na tehnologiju}
 potrosnjatehnologija = pitanja[complete.cases(pitanja[, c('Spending.on.gadgets', 'Techno..Trance')]),]
@@ -506,7 +506,7 @@ cor.test(potrosnjatehnologija$Spending.on.gadgets, potrosnjatehnologija$Techno..
 fit.spending.on.gadgets = lm(Spending.on.gadgets ~ Techno..Trance,data=potrosnjatehnologija) 
 summary(fit.spending.on.gadgets)
 ```
-Došli smo tako i do posljednje kategorije, odnosno predviđanja potrošnje na tehnologiju u odnosu na glazbeni žanr.Vrijednost ${R^2}$ nešto je niža od posljednje, a F-statistika je ovaj puta još veća, čak i gledajući komparativu u odnosu na granicu koja sada iznosi 3.84 pa ukazuje da je model značajan. Ovdje, imamo korelaciju samo dviju varijabli i ona također nije značajna, što potvrđuje i Pearsonov test. Zaključno, ne možemo kvalitetno donijeti zaključak kako će trošiti na izgled.
+Došli smo tako i do posljednje kategorije, odnosno predviđanja potrošnje na tehnologiju u odnosu na glazbeni žanr. Vrijednost ${R^2}$ nešto je niža od posljednje, a F-statistika je ovaj puta još veća, čak i gledajući komparativu u odnosu na granicu koja sada iznosi 3.84 pa ukazuje da je model značajan. Ovdje, imamo korelaciju samo dviju varijabli i ona također nije značajna, što potvrđuje i Pearsonov test. Zaključno, ne možemo kvalitetno donijeti zaključak kako će trošiti na izgled.
 
 ```{r pokušaj faktoriziranja prije provođenja testiranja}
 fit.Spending.on.looks = lm(potrosnjaizgled$Spending.on.looks ~ factor(potrosnjaizgled$Hiphop..Rap) + factor(potrosnjaizgled$Techno..Trance), data=potrosnjaizgled)
@@ -515,15 +515,15 @@ summary(fit.Spending.on.looks)
 fit.Spending.on.looks.nonfactor = lm(Spending.on.looks ~ Hiphop..Rap + Techno..Trance, data=potrosnjaizgled)
 summary(fit.Spending.on.looks.nonfactor)
 ```
-Pokušali smo još metodu, odlučili smo faktoririzati vrijednosti prije ugradnje u model što je doista rezultairali višom vrijendošću ${R^2}$, nego kada to nismo učinili. Vrijenodsti smo odlučili faktorizirati jer ipak ovdje rukujemo s kategorijama koje, istina, imaju uređaj, ali nas je zainmalo do kakvih rezultata možemo ovim putem doći. Možemo primjetiti da se to velika rzlika očituje u razini F-statistike koje je znatno, čak i gledavši omjere, veća u slučaju sa nefaktoriziranim vrijednostima te bismo stoga ipak odbacili opciju faktoriziranja.
-Valja još spomenuti kako su isprobane i svi parovi vrijednosti žanrova i obrazaca potrošnje, ali to nam nije dalo bolje razultate od ovdje izvedenih.
+Pokušali smo još jednu metodu, odlučili smo faktoririzati vrijednosti prije ugradnje u model što je doista rezultairali višom vrijednošću ${R^2}$, nego kada to nismo učinili. Vrijednosti smo odlučili faktorizirati jer ipak ovdje rukujemo s kategorijama koje, istina, imaju uređaj, ali nas je zanimalo do kakvih rezultata možemo ovim putem doći. Možemo primjetiti da se velika razlika očituje u razini F-statistike koja je znatno, čak i gledavši omjere, veća u slučaju sa nefaktoriziranim vrijednostima te bismo stoga ipak odbacili opciju faktoriziranja.
+Valja još spomenuti kako su isprobani i svi parovi vrijednosti žanrova i obrazaca potrošnje, ali to nam nije dalo bolje razultate od ovdje izvedenih.
 
 ### Zaključak 
 Nije moguće kvalitetno predvidjeti obrazac potrošnje ovisno o žanru glazbe kojeg ispitanik preferira.
 
 ## Istraživačko pitanje 3: Možemo li temeljem danih varijabli predvidjeti dob ispitanika?
 
-Za ovo istraživačko pitanje koristiti ćemo model linearne regresije. 
+Za ovo istraživačko pitanje koristit ćemo model linearne regresije. 
 
 Model linearne regresije pretpostavlja linearnu vezu između ulaznih i izlaznih varijabli:
 $$Y = \beta_0 + \sum_{j = 1}^{p}\beta_jx_j + \epsilon$$
@@ -543,7 +543,7 @@ Da bi se ova jednadžba mogla riješiti potrebno je invertirati matricu $\mathbf
 
 Estimacija parametara linearne regresije dostupni su u funkciji `lm` u paketu `stats` koji ćemo dalje i koristiti.
 
-Počinjemo sa biranjem kategorija koje ćemo ispitivati u korelaciji sa dobi ispitanika funkcijom lm().
+Počinjemo s biranjem kategorija koje ćemo ispitivati u korelaciji s dobi ispitanika funkcijom lm().
 ```{r Odabrane kategorije za zadatak}
 fit.economy_mgnt = lm(pitanja$Age~pitanja$Economy.Management,data=pitanja)
 fit.Gardening = lm(pitanja$Age~pitanja$Gardening,data=pitanja)
@@ -614,7 +614,7 @@ summary(fit.Weight)
 summary(fit.number.of.siblings)
 ```
 
-Nakon ispisa možemo zaključiti da postoje varijable koje su povezane sa varijablom godine, te želimo istražiti koje kombinacije su najbolje korištenjem višestruke regresije, zato biramo one sa najvišim parametrima R squared i najnižim p vrijednostima. 
+Nakon ispisa možemo zaključiti da postoje varijable koje su povezane s varijablom godine, te želimo istražiti koje kombinacije su najbolje korištenjem višestruke regresije, zato biramo one s najvišim parametrima R squared i najnižim p vrijednostima. 
 
 ```{r Višestruka regresija}
 fit.GardeningAndWorkload = lm(pitanja$Age~pitanja$Gardening + pitanja$Prioritising.workload,data=pitanja)
@@ -677,7 +677,7 @@ cor(pitanja$Gardening, pitanja$Prioritising.workload)
 
 ```
 
-Top 3 kombinacija - Education + Weight + Workload ima najveći R squared i najmanju p vrijednost te nju obrađujemo za daljnje provjere
+Top 3 kombinacija - Education + Weight + Workload ima najveći R squared i najmanju p vrijednost te nju obrađujemo za daljnje provjere.
 ```{r Najbolja kombinacija}
 cor(pitanja$Weight,pitanja$Prioritising.workload)
 
@@ -691,7 +691,7 @@ lillie.test(rstandard(fit.EducationAndWeightAndWorkload))
 ```
 H0 - dob ispitanika se ne može predvidjeti
 H1 - dob ispitanika se može predvidjeti
-Distribucija reziduala teži ka normalnoj na što i ciljamo, a q-q plot reziduala ne varira daleko od normalne distribucije tj. nalikuje normalnoj
+Distribucija reziduala teži ka normalnoj na što i ciljamo, a q-q plot reziduala ne varira daleko od normalne distribucije tj. nalikuje normalnoj.
 Uz ovoliko mali p i veliki R možemo zaključiti da se H0 odbacuje (cilj nam je imati što manji p radi testa).
 R squared nam treba biti što veći obzirom da on opisuje koji postotak varijance u izlaznoj varijabli Y je estimirani linearni model objasnio tj. opisao.
 
@@ -741,5 +741,5 @@ lillie.test(rstandard(fit.FriendsvsFakeLonelyandPunctuality))
 
 cor(pitanja$Loneliness, pitanja$Fake)
 ```
-Distribucija rezudiala je normalna, q-q plot prikazuje da distribucija nalikuje normalnoj.
+Distribucija reziduala je normalna, q-q plot prikazuje da distribucija nalikuje normalnoj.
 R squared nije visok kao u prošlom primjeru no ovakav tip pitanja može jako varirati od osobe do osobe te ipak dokazuje povezanost ovih kategorija (Fake, Loneliness i Punctuality) sa brojem prijatelja.
